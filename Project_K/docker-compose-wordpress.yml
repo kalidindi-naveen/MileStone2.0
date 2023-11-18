@@ -1,0 +1,45 @@
+# http://localhost:8000/
+# in Project K folder it will automatically create {mysql & wordpress} folders inside docker-data folder.
+# docker-data
+# ├── mysql
+# ├── wordpress
+
+version: "3"
+
+networks:
+  net-1:
+    name: net-1_1
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql_1
+    volumes:
+      - ./docker-data/mysql:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    networks:
+      - net-1
+
+  wordpress:
+    image: wordpress:latest
+    container_name: wordpress_1
+    volumes:
+      - ./docker-data/wordpress:/var/www/html
+    restart: always
+    ports:
+      - "8000:80"
+    environment:
+      WORDPRESS_DB_HOST: mysql
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    networks:
+      - net-1
+    depends_on:
+      - mysql
